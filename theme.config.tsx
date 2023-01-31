@@ -14,7 +14,7 @@ const config: DocsThemeConfig = {
         © {new Date().getFullYear()}{" "}
         <a
           className="nx-text-primary-600 nx-underline nx-decoration-from-font [text-underline-position:under]"
-          href="#"
+          href="https://github.com/pbwusk"
           target="_blank"
           rel="noopener"
         >

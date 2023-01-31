@@ -4,7 +4,19 @@
     "type": "page"
   },
   "Materi": {
+    "display": "hidden",
     "title": "Materi",
     "type": "page"
+  },
+  "Tugas": {
+    "title": "Tugas",
+    "type": "page",
+    "theme": {
+      "breadcrumb": true,
+      "footer": true,
+      "sidebar": true,
+      "toc": true,
+      "pagination": false
+    }
   }
 }
