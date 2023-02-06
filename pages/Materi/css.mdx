@@ -1,0 +1,78 @@
+# Cascading Style Sheets (CSS)
+
+## Apa itu CSS?
+
+CSS adalah singkatan dari Cascading Style Sheets. CSS adalah bahasa yang digunakan untuk mengatur tampilan dari sebuah halaman web. CSS dapat mengubah warna, ukuran, dan jenis font, serta banyak lagi. CSS juga dapat digunakan untuk mengatur tampilan dari halaman web yang lebih kompleks, seperti layout, margin, dan padding.
+
+## Kenapa pakai CSS?
+
+CSS digunakan untuk mendefinisikan desain untuk halaman web. CSS memungkinkan untuk mengubah tampilan halaman web tanpa harus mengubah kontennya.
+
+## Syntax
+
+CSS menggunakan sintaks seperti ini:
+
+```
+    selector {
+      property: value;
+    }
+```
+
+Contoh
+
+```
+    h1 {
+      color: red;
+    }
+```
+
+Comment CSS
+
+```
+    /* Ini adalah comment */
+```
+
+## Jenis-jenis CSS
+
+- **Inline CSS**
+  merupakan cara untuk menambahkan CSS pada sebuah elemen HTML. Inline CSS ditulis langsung pada elemen HTML menggunakan atribut style. Inline CSS memiliki kelebihan yaitu mudah untuk diimplementasikan, namun memiliki kekurangan yaitu tidak dapat digunakan untuk elemen yang sama.
+
+  Contoh
+
+  ```
+    <h1 style="color: red;">Ini adalah contoh inline CSS</h1>
+  ```
+
+- **Internal CSS**
+  merupakan cara untuk menambahkan CSS pada sebuah halaman HTML. Internal CSS ditulis pada bagian head HTML menggunakan tag style. Internal CSS memiliki kelebihan yaitu mudah untuk diimplementasikan, namun memiliki kekurangan yaitu tidak dapat digunakan untuk halaman yang berbeda.
+
+  contoh
+
+      ```
+        <head>
+          <style>
+            h1 {
+              color: red;
+            }
+          </style>
+        </head>
+      ```
+
+- **External CSS**
+  merupakan cara untuk menambahkan CSS pada sebuah halaman HTML. External CSS ditulis pada file terpisah dengan ekstensi .css. External CSS memiliki kelebihan yaitu dapat digunakan untuk halaman yang berbeda, namun memiliki kekurangan yaitu tidak mudah untuk diimplementasikan.
+
+  contoh  
+  file html
+      ```
+        <head>
+          <link rel="stylesheet" href="style.css">
+        </head>
+      ```
+
+  file style.css
+
+        ```
+          h1 {
+            color: red;
+          }
+        ```
