@@ -1,4 +1,6 @@
 {
-  "course-intro": "Introduction to Web Programming Course",
-  "text-editor": "Text Editor"
+  "text-editor": "Text Editor",
+  "html": "Week 01: HTML",
+  "css": "Week 02: CSS"
+
 }
