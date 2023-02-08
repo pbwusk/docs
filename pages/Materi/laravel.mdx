@@ -1,4 +1,5 @@
 import { Callout } from "nextra-theme-docs";
+import Image from 'next/image';
 
 # Laravel
 
@@ -37,9 +38,9 @@ Berikut ini cara melakukan Instalasi pada composer:
 1. Download File composer [disini](https://getcomposer.org/Composer-Setup.exe)
 2. Install Composer
 3. Tentukan Lokasi File Instalasi
-4. Cek di Command Prompt apakah composer sudah berhasil di install atau belum
+4. Cek di Command Prompt dengan mengetik "composer" apakah composer sudah berhasil seperti dibawah ini:
 
-
+<Image src="/images/web/composer.png" alt="Hello" width={750} height={500} />
 
 ### Linux (Distro Ubuntu)
 
@@ -93,4 +94,18 @@ composer create-project laravel/laravel nama-aplikasi
 4. Tunggu sampai selesai
 
 
-# 
+# Menjalankan Aplikasi Laravel
+
+
+```
+php artisan serve
+
+```
+
+<Image src="/images/web/laravel.png" alt="Hello" width={750} height={500} />
+
+Jika sudah memiliki tampilan seperti gambar diatas maka aplikasi laravel sudah bisa berjalan dengan sempurna.
+
+
+
+
