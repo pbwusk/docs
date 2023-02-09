@@ -107,5 +107,73 @@ php artisan serve
 Jika sudah memiliki tampilan seperti gambar diatas maka aplikasi laravel sudah bisa berjalan dengan sempurna.
 
 
+# Laravel Migration
+
+Migration adalah sebuah fitur di Laravel yang berguna sebagai version control untuk tabel pada Database. Dengan migration kita bisa membuat dan memodifikasi tabel Database dengan sangat mudah.
+
+```
+
+php artisan make:migration create_name_table
+
+```
+
+
+
+# Laravel Model
+
+
+- Model bertugas untuk mengatur,menyiapkan, memanipulasi dan mengorganisasikan data (dari database) sesuai dengan instruksi dari Controller. 
+- Model mempunyai fitur Eloquent untuk melakukan Query ke database
+- Dengan Model kita dapat membuat relasi antar tabel. Relasi antar tabel dapat di buat menggunakan ORM (Object Relational Maping)
+
+
+Berikut ini adalah membuat model dengan menggunakan command Artisan
+
+
+```
+php artisan make:Model Name
+
+```
+
+Jika kita ingin menambahkan model + migration kita juga bisa membuat command Artisan seperti ini juga:
+
+
+```
+php artisan make:Model Name -m
+```
+
+
+| Eloquent | SQL Query          | 
+| ------- | ------------- | 
+|    <Image src="/images/web/Eloquent.png" alt="Hello" width={750} height={500} />     |      <Image src="/images/web/QuerySQL.png" alt="Hello" width={750} height={500} />         |
+
+
+
+
+
+
+# Laravel Controller
+
+
+Controller adalah salah satu komponen inti dari MVC yang befungsi sebagai penghubung antara request user ke model yang nantinya akan 
+diolah dan di kembalikan lagi dalam bentuk response.
+
+
+```
+php artisan make:Controller namaController
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
