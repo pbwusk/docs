@@ -1,0 +1,179 @@
+import { Callout } from "nextra-theme-docs";
+import Image from 'next/image';
+
+# Laravel
+
+## Pre-requisites
+- Apache & Database Server (XAMPP)
+
+<Callout type="warning" emoji="⚠️">
+  Tidak harus menggunakan XAMPP, Namun bagi pemula disarankan menggunakan XAMPP
+</Callout>
+
+
+## Apa itu Laravel
+
+Laravel adalah sebuah web framework berbasis PHP yang sudah sangat populer. Laravel memiliki expressive, elegant syntax yang sangat mudah untuk digunakan
+Laravel Memiliki arsitektur MVC (Model View Controller) 
+
+
+## Kenapa pakai Laravel ? 
+
+laravel memiliki 5 keutamaan yaitu:
+1. Laravel merupakan salah satu framework PHP paling populer dalam web development
+2. Laravel memiliki komunitas besar sehingga mudah menemukan mudah menemukan materi dan solusi masalah
+3. Di Indonesia banyak perusahaan yang menggunakan teknologi PHP sebagai framework web dev
+4. Laravel memiliki banyak fitur yang cukup powerful seperti ORM, Blade Engine, Artisan dan ekosistem yang sangat mumpuni.
+5. Laravel memiliki banyak class dengan penamaan yang keren sehingga sangat bahagia untuk digunakan.
+
+
+## Instalasi Laravel
+
+Sebelum melakukan tahap Instalasi biasanya kita memerlukan Instalasi composer. Berikut ini cara melakukan Instalasi composer
+
+
+### Windows
+Berikut ini cara melakukan Instalasi pada composer:
+
+1. Download File composer [disini](https://getcomposer.org/Composer-Setup.exe)
+2. Install Composer
+3. Tentukan Lokasi File Instalasi
+4. Cek di Command Prompt dengan mengetik "composer" apakah composer sudah berhasil seperti dibawah ini:
+
+<Image src="/images/web/composer.png" alt="Hello" width={750} height={500} />
+
+### Linux (Distro Ubuntu)
+
+<Callout type="warning" emoji="⚠️">
+  Jika cara ini tidak berhasil silahkan coba dengan cara yang lain, karena cara ini dikhususkan bagi mahasiswa yang menggunakan linux dengan distro Ubuntu
+</Callout>
+
+
+1. Buka terminal dan lakukan update dengan cara:
+```
+sudo apt-get update
+```
+2. Install PHP dan CURL
+```
+sudo apt-get install curl unzip
+sudo apt-get install php php-curl
+```
+3. Download Composer
+```
+curl -sS https://getcomposer.org/installer -o composer-setup.php
+```
+4. Install composer
+```
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+```
+ketika composer versi baru sudah tersedia kita bisa melakukan update dengan cara:
+
+```
+sudo composer self-update 
+```
+5. Check apakah composer sudah berhasil di install atau belum
+
+```
+composer -V
+
+```
+
+
+Setelah kita berhasil melakukan instalasi pada composer, silahkan buatlah projek dengan cara sebagai Berikut
+
+1. Buka folder XAMPP
+2. Buka folder htdocs
+```
+cd htdocs
+```
+3. Buatlah projek laravel dengan menggunakan composer
+```
+composer create-project laravel/laravel nama-aplikasi
+```
+4. Tunggu sampai selesai
+
+
+# Menjalankan Aplikasi Laravel
+
+
+```
+php artisan serve
+
+```
+
+<Image src="/images/web/laravel.png" alt="Hello" width={750} height={500} />
+
+Jika sudah memiliki tampilan seperti gambar diatas maka aplikasi laravel sudah bisa berjalan dengan sempurna.
+
+
+# Laravel Migration
+
+Migration adalah sebuah fitur di Laravel yang berguna sebagai version control untuk tabel pada Database. Dengan migration kita bisa membuat dan memodifikasi tabel Database dengan sangat mudah.
+
+```
+
+php artisan make:migration create_name_table
+
+```
+
+
+
+# Laravel Model
+
+
+- Model bertugas untuk mengatur,menyiapkan, memanipulasi dan mengorganisasikan data (dari database) sesuai dengan instruksi dari Controller. 
+- Model mempunyai fitur Eloquent untuk melakukan Query ke database
+- Dengan Model kita dapat membuat relasi antar tabel. Relasi antar tabel dapat di buat menggunakan ORM (Object Relational Maping)
+
+
+Berikut ini adalah membuat model dengan menggunakan command Artisan
+
+
+```
+php artisan make:Model Name
+
+```
+
+Jika kita ingin menambahkan model + migration kita juga bisa membuat command Artisan seperti ini juga:
+
+
+```
+php artisan make:Model Name -m
+```
+
+
+| Eloquent | SQL Query          | 
+| ------- | ------------- | 
+|    <Image src="/images/web/Eloquent.png" alt="Hello" width={750} height={500} />     |      <Image src="/images/web/QuerySQL.png" alt="Hello" width={750} height={500} />         |
+
+
+
+
+
+
+# Laravel Controller
+
+
+Controller adalah salah satu komponen inti dari MVC yang befungsi sebagai penghubung antara request user ke model yang nantinya akan 
+diolah dan di kembalikan lagi dalam bentuk response.
+
+
+```
+php artisan make:Controller namaController
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
