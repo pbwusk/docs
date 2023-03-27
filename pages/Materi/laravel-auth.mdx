@@ -41,7 +41,7 @@ npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 5. Konfigurasi tailwind di file tailwind.config.js seperti dibawah ini
-``` tailwind.config.js
+``` javascript filename=tailwind.config.js
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -59,7 +59,7 @@ module.exports = {
 
 6. Menambahkan arahan tailwind ke CSS 
 Dikarenakan laravel memiliki sistem bundling, maka kita harus menambahkan arahan tailwind ke file resources/css/app.css
-``` app.css
+``` css filename=app.css
 
 @tailwind base;
 @tailwind components;
@@ -227,6 +227,18 @@ class User extends Authenticatable
 
     
 }
+```
+
+Setelah itu kita akan melakukan migrasi untuk membuat tabel users dan subjects ke dalam database
+```
+php artisan migrate:fresh 
+```
+
+Jika kita mengisi data dump di seeder maka kita bisa menambahkan --seed seperti dibawah ini:
+```
+
+php artisan migrate:fresh --seed
+
 ```
 
 
