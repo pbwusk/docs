@@ -1,0 +1,979 @@
+import { Callout } from "nextra-theme-docs";
+import Image from 'next/image';
+
+
+# Authentication Di Laravel
+
+Banyak aplikasi web menyediakan cara bagi penggunanya untuk mengautentikasi dengan aplikasi dan "login". 
+Dengan Menerapkan fitur ini dalam aplikasi web dapat menjadi upaya yang rumit dan berpotensi berisiko. 
+Untuk alasan ini, Laravel berusaha memberi Anda alat yang Anda butuhkan untuk mengimplementasikan otentikasi dengan cepat, aman, dan mudah.
+
+sumber: [disini](https://laravel.com/docs/10.x/authentication)
+
+# Studi Kasus
+
+Untuk memahami lebih lanjut mengenai authentikasi, maka kita akan langsung saja membuat sebuah aplikasi sederhana yang memiliki fitur login dan register.
+Aplikasi yang akan kita buat itu adalah SIAKAD (Sistem Informasi Akademik) yang memiliki fitur login dan register dan dapat menampilkan mata kuliah yang dipilih.
+
+<Image src="/images/web/ERD_SIAKAD.jpeg" alt="Hello" width={750} height={500} />
+
+# Konfigurasi Awal
+1. Membuat Project Baru:
+``` 
+composer create-project laravel/laravel SIAKAD 
+```
+2. Membuat Database baru
+```
+create database SIAKAD;
+```
+3. Setting Database di file .env
+``` .env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=SIAKAD
+DB_USERNAME=<username_anda>
+DB_PASSWORD=<password_anda>
+```
+4. NPM Install
+```
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+5. Konfigurasi tailwind di file tailwind.config.js seperti dibawah ini
+``` javascript filename=tailwind.config.js
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./resources/**/*.blade.php",
+    "./resources/**/*.js",
+    "./resources/**/*.vue",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+6. Menambahkan arahan tailwind ke CSS 
+Dikarenakan laravel memiliki sistem bundling, maka kita harus menambahkan arahan tailwind ke file resources/css/app.css
+``` css filename=app.css
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+7. Memulai proses dalam membangun aplikasi
+```
+npm run dev
+```
+
+atau 
+```
+sudo npm run dev
+```
+
+8. Menambahkan pop up Alert 
+``` 
+composer require realrashid/sweet-alert
+```
+
+Setelah itu kita tambahan service provider di file config/app.php sesuai dokumentasi [disini](https://realrashid.github.io/sweet-alert/install)
+
+# Membuat Model dan Migration
+
+Pada tahap ini kita akan membuat model dan migration untuk tabel users, dan mata kuliah (subjects).
+
+1. Dikarenakan pada saat kita membuat project baru, maka laravel sudah membuat model dan migration untuk tabel users, maka kita tidak perlu membuatnya lagi. Ditahap ini kita hanya sedikit mengubah migration untuk tabel users.
+   menjadi seperti dibawah ini: 
+
+``` php
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('npm')->unique();
+            $table->string('password');
+            $table->string('role')->default('user');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+    }
+};
+
+```
+
+2. Membuat model dan migration untuk tabel subjects
+``` 
+php artisan make:model Subjects -m
+```
+
+Lalu setelah itu kita akan mengubah migration untuk tabel subjects menjadi seperti dibawah ini:
+
+``` php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('subjects', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('users_id');
+            $table->string('subject_name');
+            $table->string('day');
+            $table->string('room');
+            $table->string('lecturer');
+            $table->integer('sks');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('subjects');
+    }
+};
+
+```
+
+3. Membuat relasi antara tabel users dan subjects
+
+Ubah file Subjects.php menjadi seperti dibawah ini:
+
+``` php filename=Subjects.php
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Subjects extends Model
+{
+    use HasFactory;
+
+    /**
+     * 
+     * Satu mata kuliah memiliki banyak user
+     * relasi many to many
+     */
+    public function user(){
+        return $this->belongsToMany(User::class);
+    }
+}
+
+```
+Lalu tambahan relasi di file User.php menjadi seperti dibawah ini:
+``` php filename=User.php
+<?php
+
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable;
+
+
+    /**
+     * 
+     * Satu user memiliki banyak mata kuliah
+     * relasi one to many
+     */
+
+    public function mataKuliah(){
+        return $this->hasMany(Subjects::class);
+    }
+
+    
+}
+```
+
+Setelah itu kita akan melakukan migrasi untuk membuat tabel users dan subjects ke dalam database
+```
+php artisan migrate:fresh 
+```
+
+Jika kita mengisi data dump di seeder maka kita bisa menambahkan --seed seperti dibawah ini:
+```
+
+php artisan migrate:fresh --seed
+
+```
+
+
+# Membuat view
+
+Berikut ini adalah struktur folder yang akan kita gunakan untuk membuat view
+
+<Callout type="warning" emoji="⚠️">
+ ```
+.
+└── views/
+    ├── auth/
+    │   ├── login.blade.php
+    │   └── register.blade.php
+    ├── layouts/
+    │   └── app.blade.php
+    ├── partials/
+    │   └── navbar.blade.php
+    ├── user/
+    │   └── dashboard.blade.php
+    ├── vendor/
+    │   └── sweetalert/
+    │       └── alert.blade.php
+    └── index.blade.php
+ 
+  ```
+</Callout>
+
+1. Membuat layouts terlebih dahulu di folder layouts dan di file app.blade.php
+``` php filename=app.blade.php
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title> {{$title}} | SIAKAD  </title>
+  @vite('resources/css/app.css')
+</head>
+<body @yield('body')>
+
+
+  @include('partials.navbar')
+
+
+  <main class="min-h-screen">
+    @yield('content')
+  </main>
+
+
+  @include('sweetalert::alert')
+  @vite('resources/js/app.js')
+
+  
+</body>
+</html>
+
+```
+
+2. Membuat navbar di folder partials dan di file navbar.blade.php
+``` php filename=navbar.blade.php
+<header class="bg-transparent absolute top-0 left-0 w-full flex items-center z-10">
+
+    <div class="container">
+        <div class="flex items-center justify-between relative">
+            <div class="px-4">
+                <a href="#home" class="font-bold text-lg text-primary block py-6">  
+                    
+                    <!-- if user is logged in, show user name -->
+                    @auth
+                    {{ Auth::user()->name }}
+                    @else
+                    SIAKAD
+                    @endauth  
+                </a>
+
+            </div>
+            <div class="flex items-center px-4">
+                <button id="hamburger" name="hamburger" type="button" class="block absolute right-4 lg:hidden ">
+                    <span class="hamburger-line transition duration-300 ease-in-out origin-top-left"></span>
+                    <span class="hamburger-line transition duration-300 ease-in-out"></span>
+                    <span class="hamburger-line transition duration-300 ease-in-out origin-bottom-left"></span>
+                </button>
+
+                <nav id="nav-menu" class="hidden absolute py-5 bg-white shadow-lg rounded-lg max-w-[250px] w-full right-4 top-full lg:block lg:static lg:bg-transparent lg:max-w-full lg:shadow-none lg:rounded-none  ">
+                    <ul class="block lg:flex ">
+
+                        @auth
+                        <li class="group">
+                            <a href="/register" class="text-base text-black py-2 mx-8 flex group-hover:text-primary">Register</a>
+                        </li>
+                        <li class="group">
+                            <a href="/logout" class="text-base text-black py-2 mx-8 flex group-hover:text-primary">Logout</a>
+                        </li>
+                        @else
+                        <li class="group">
+                            <a href="/login" class="text-base text-black py-2 mx-8 flex group-hover:text-primary">Login</a>
+                        </li>
+                        <li class="group">
+                            <a href="/register" class="text-base text-black py-2 mx-8 flex group-hover:text-primary">Register</a>
+                        </li>
+                        @endauth
+                        
+                        
+                    </ul>
+                </nav>
+
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+</header>
+
+```
+
+
+3. Membuat index di folder views dan di file index.blade.php
+``` php filename=index.blade.php
+
+@extends('layouts.app')
+
+
+@section('body')
+    class="bg-gray-200"
+
+@endsection
+
+
+@section('content')
+
+<section id="home" class="pt-36 ">
+    <div class="container">
+        <div class="flex flex-wrap">
+            <div class="w-full self-center px-4 lg:w-1/2">
+                <h1 class="text-base font-semibold text-primary md:text-xl lg:text-2xl"> SELAMAT DATANG DI  <span class="block font-bold text-slate-800 text-5xl mt-1 lg:text-5xl "> SIAKAD </span>  </h1>
+                
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- End Hero Section -->
+
+
+
+@endsection
+
+
+```
+
+4. Membuat login di folder views/auth dan di file login.blade.php
+``` php filename=login.blade.php
+
+@extends('layouts.app')
+
+
+@section('body')
+    class="bg-gray-200"
+
+@endsection
+
+@section('content')
+    <!-- This is the login form -->
+
+    <form action="/login" method="POST">
+    @csrf
+    <div class="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Silahkan Login
+            </h2>
+        </div>
+
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <form class="space-y-6" action="#" method="POST">
+                    <div>
+                        <label for="NPM" class="block text-sm font-medium text-gray-700">
+                            NPM
+                        </label>
+                        <div class="mt-1">
+                            <input id="npm" name="npm" required
+                                class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                placeholder="Silahkan masukkan NPM anda">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">
+                            Password
+                        </label>
+                        <div class="mt-1">
+                            <input id="password" name="password" type="password" autocomplete="current-password"
+                                required
+                                class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                placeholder="Masukkan Password Anda">
+                        </div>
+                    </div>
+
+                    <!-- make button for login -->
+                    <div>
+                        <button type="submit"
+                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                                <!-- Heroicon name: solid/lock-closed -->
+                                <svg class="h-5 w-5 text-blue-500 group-hover:text-blue-400"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M5 8a3 3 0 016 0v1h1a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2h1V8zm3 0V7a1 1 0 10-2 0v1H5a1 1 0 00-1 1v5a1 1 0 001 1h10a1 1 0 001-1v-5a1 1 0 00-1-1h-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            Login
+                        </button>
+                    </div>
+
+    
+    </form>
+        
+
+@endsection
+
+```
+
+5. Membuat register di folder views/auth dan di file register.blade.php
+``` php filename=register.blade.php
+@extends('layouts.app')
+
+
+@section('body')
+    class="bg-gray-200"
+@endsection
+
+@section('content')
+    <!-- Register form that includes the name, npm, password  using tailwind css -->
+
+
+
+
+
+        <div class="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Silahkan Register
+                </h2>
+            </div>
+
+            <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    <form action="/register" method="POST">
+                        @csrf
+
+                        <!-- Name -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">
+                                Name
+                            </label>
+                            <div class="mt-1">
+                                <input id="name" name="name" required
+                                    class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                    placeholder="Silahkan masukkan Nama anda" required>
+                            </div>
+
+                        <!-- NPM -->
+                        <div>
+                            <label for="NPM" class="block text-sm font-medium text-gray-700">
+                                NPM
+                            </label>
+                            <div class="mt-1">
+                                <input id="npm" name="npm" required
+                                    class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                    placeholder="Silahkan masukkan NPM anda" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700">
+                                Password
+                            </label>
+                            <div class="mt-1">
+                                <input id="password" name="password" type="password" autocomplete="current-password"
+                                    required
+                                    class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                    placeholder="Masukkan Password Anda" required>
+                            </div>
+                        </div>
+
+                        <!-- make button for login -->
+                        <div>
+                            <button type="submit"
+                                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                                    <!-- Heroicon name: solid/lock-closed -->
+                                    <svg class="h-5 w-5 text-blue-500 group-hover:text-blue-400"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                        aria-hidden="true">
+                                        <path fill-rule="evenodd"
+                                            d="M5 8a3 3 0 016 0v1h1a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2h1V8zm3 0V7a1 1 0 10-2 0v1H5a1 1 0 00-1 1v5a1 1 0 001 1h10a1 1 0 001-1v-5a1 1 0 00-1-1h-4z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                                Register
+                            </button>
+                        </div>
+                    </form>
+                @endsection
+
+
+```
+
+6. Membuat dashboard di folder user dan di file dashboard.blade.php
+``` php filename=dashboard.blade.php
+
+@extends('layouts.app')
+
+
+
+
+
+@section('content')
+    <!-- add table -->
+
+    <section id='table' class="pt-36 mr-40 ">
+
+
+        <div class="container">
+
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                Nama Mata Kuliah
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex items-center">
+                                    Ruangan
+                                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 ml-1"
+                                            aria-hidden="true" fill="currentColor" viewBox="0 0 320 512">
+                                            <path
+                                                d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                                        </svg></a>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex items-center">
+                                    Hari
+                                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 ml-1"
+                                            aria-hidden="true" fill="currentColor" viewBox="0 0 320 512">
+                                            <path
+                                                d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                                        </svg></a>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex items-center">
+                                    Dosen
+                                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 ml-1"
+                                            aria-hidden="true" fill="currentColor" viewBox="0 0 320 512">
+                                            <path
+                                                d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                                        </svg></a>
+                                </div>
+                            </th>
+
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex items-center">
+                                    SKS
+                                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 ml-1"
+                                            aria-hidden="true" fill="currentColor" viewBox="0 0 320 512">
+                                            <path
+                                                d="M27.66 224h264.7c24.6 0 36.89-29.78 19.54-47.12l-132.3-136.8c-5.406-5.406-12.47-8.107-19.53-8.107c-7.055 0-14.09 2.701-19.45 8.107L8.119 176.9C-9.229 194.2 3.055 224 27.66 224zM292.3 288H27.66c-24.6 0-36.89 29.77-19.54 47.12l132.5 136.8C145.9 477.3 152.1 480 160 480c7.053 0 14.12-2.703 19.53-8.109l132.3-136.8C329.2 317.8 316.9 288 292.3 288z" />
+                                        </svg></a>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+
+                          <!-- Mengecek apakah data kosong -->
+                          @if ($subjects->isEmpty())
+                            <td colspan="4" class="px-6 py-4 text-center">Tidak ada data</td>       
+                          @endif
+                          <!-- Menampilkan daftar mata kuliah tergantung user yang login -->
+                            @foreach ($subjects as $subject)
+                                <th scope="row"
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ $subject->subject_name }}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{ $subject->room }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ $subject->day }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ $subject->lecturer }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ $subject->sks }}
+                                </td>
+                        </tr>
+                        @endforeach
+
+
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+
+
+    </section>
+@endsection
+
+```
+
+7. Membuat Controller yang bernama pageController.php
+
+```
+ php artisan make:controller PagesController 
+```
+
+Lalu tambahan fungsi-fungsi yang dibutuhkan
+
+```php
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Subjects;
+
+class PagesController extends Controller
+{
+    public function halamanUtama(){
+        return view('index', [
+            'title' => 'siakad'
+        ]);
+    }
+
+    public function dashboard(){
+
+        $subjects = Subjects::where('users_id', auth()->user()->id)->get();
+
+        return view('user.dashboard', [
+            'title' => 'Dashboard',
+            'subjects' => $subjects
+        ]);
+    }
+}
+
+
+```
+
+8. Membuat controller untuk mengontrol login dan register
+
+```
+ php artisan make:controller auth/LoginController --resource
+```
+
+```
+php artisan make:controller auth/RegisterController --resource
+```
+
+Lalu di file LoginController.php tambahkan fungsi-fungsi yang dibutuhkan
+
+```php
+
+<?php
+
+namespace App\Http\Controllers\auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Auth;
+
+class loginController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return view('auth.login', [
+            'title' => 'Login Page'
+        ]);
+    }
+    
+    public function login(Request $request){
+        $credential = $request->validate([
+            'npm' => 'required',
+            'password' => 'required'
+        ]);
+
+        // if user is exist in database then we will redirect to dashboard page and activate middleware auth page
+
+        if(Auth::attempt($credential)){
+            return redirect()->intended('/dashboard');
+        }
+        
+        Alert::error('Error', 'NPM atau Password salah');
+        return back()->with('loginError', 'NPM atau Password salah');
+
+}
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy()
+    {
+        Auth::logout();
+
+        request()->session()->invalidate();
+
+        request()->session()->regenerateToken();
+
+        return redirect('/');
+    }
+}
+
+
+```
+
+
+Lalu tambahan fungsi-fungsi yang dibutuhkan di file RegisterController.php
+
+```php
+
+<?php
+
+namespace App\Http\Controllers\auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use RealRashid\SweetAlert\Facades\Alert;
+
+class registerController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return view('auth.register', [
+            'title' => 'Register Page'
+        ]);
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        // store data registration to table user which is name,npm,password
+        $request->validate([
+            'name' => 'required',
+            'npm' => 'required',
+            'password' => 'required'
+        ]);
+
+        # increment id
+        $id = DB::table('users')->max('id');
+
+
+        # Jika NPM sudah ada yang punya maka kita harus mencegahnya agar tidak bisa register
+        if(DB::table('users')->where('npm', $request->npm)->exists()){
+            Alert::error('Error', 'NPM udah ada yang punya oi');
+            return redirect('/registerPage');
+        }
+
+        // store data to table user
+        DB::table('users')->insert([
+            'id' => $id + 1,
+            'name' => $request->name,
+            'npm' => $request->npm,
+            'password' => Hash::make($request->password)
+
+        ]);
+
+        
+
+        return redirect('/login');
+
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+}
+
+
+```
+
+9. Setelah itu untuk mengkoneksikan antar halaman maka kita akan memodifikasi file web.php seperti dibawah ini:
+
+```php
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PagesController;
+use App\Http\Controllers\auth\LoginController;
+use App\Http\Controllers\auth\RegisterController;
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+
+// Route ini akan mengarahkan ke halaman utama
+// url: yang akhiranya adalah / akan diarahkan ke halaman utama
+Route::get('/', [PagesController::class, 'halamanUtama']);
+
+
+// Route ini akan mengarahkan ke halaman login
+// url: yang akhiranya adalah /loginpage akan diarahkan ke halaman login
+Route::get('/login', [LoginController::class, 'index'])->name('login');
+
+
+
+// Route ini akan mengarahkan ke halaman register
+// url: yang akhiranya adalah /registerPage akan diarahkan ke halaman register
+Route::get('/register', [RegisterController::class, 'index']);
+
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/register', [RegisterController::class, 'store']);
+
+
+// Jika session login tidak ada maka akan diarahkan ke halaman login page dan jika ada maka akan diarahkan ke halaman dashboard
+Route::get('/dashboard', [PagesController::class, 'dashboard'])->middleware('auth');
+
+
+// Route ini akan mengarahkan ke halaman logout
+// url: yang akhiranya adalah /logout akan diarahkan ke halaman logout
+// jika user sudah logout maka akan diarahkan ke halaman login dan session akan berhenti
+Route::get('/logout', [LoginController::class, 'destroy']);
+
+```
+
+Untuk Source Lengkap bisa kunjungi di GitHub kami [disini](https://github.com/pbwusk/pbw-2023-laravel-crud)
