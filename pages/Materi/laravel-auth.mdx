@@ -190,7 +190,7 @@ class Subjects extends Model
     /**
      * 
      * Satu mata kuliah memiliki banyak user
-     * relasi many to many
+     * relasi many to one
      */
     public function user(){
         return $this->belongsToMany(User::class);
