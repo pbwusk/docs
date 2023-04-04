@@ -1,0 +1,150 @@
+import { Callout } from "nextra-theme-docs";
+import Image from "next/image";
+
+# Tailwind CSS
+
+Tailwind CSS merupakan sebuah framework CSS yang sangat populer di kalangan developer. Framework ini memungkinkan developer untuk membuat desain website dengan cepat dan mudah. Selain itu, Tailwind CSS juga memungkinkan developer untuk membuat desain website yang responsif.
+
+## Mengapa Tailwind CSS?
+
+Tailwind CSS memiliki beberapa keunggulan dibandingkan dengan framework CSS lainnya, yaitu:
+
+- Mudah digunakan
+- Ringan
+- Responsif
+- Kustomisasi yang mudah
+
+Jika dibandingkan dengan Bootstrap, Tailwind CSS memiliki keunggulan yang lebih besar. Hal ini dikarenakan Tailwind CSS tidak memiliki komponen-komponen yang sudah disediakan. Sehingga developer harus membuat komponen-komponen tersebut sendiri. Hal ini tentu saja membutuhkan waktu yang lebih lama. Namun, Tailwind CSS memiliki keunggulan yang lebih besar, yaitu developer dapat membuat komponen-komponen tersebut sesuai dengan kebutuhan.
+
+## Instalasi
+
+Untuk menginstal Tailwind CSS, pertama-tama buka terminal dan ketikkan perintah berikut:
+
+```bash
+npm install tailwindcss
+```
+
+Setelah itu, buat file `tailwind.config.js` dan tambahkan kode berikut:
+
+```js
+module.exports = {
+  purge: [],
+  darkMode: false, // or 'media' or 'class'
+  theme: {
+    extend: {},
+  },
+  variants: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+## Penggunaan
+
+Untuk menggunakan Tailwind CSS pada Laravel Blade Template, pertama-tama buka file `resources/css/app.css` dan tambahkan kode berikut:
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+Setelah itu, buka file `resources/js/app.js` dan tambahkan kode berikut:
+
+```js
+import "./bootstrap";
+import "./app.css";
+```
+
+## Syntax
+
+Karena Tailwind CSS merupakan sebuah framework CSS, maka syntax yang digunakan juga mirip dengan CSS. Berikut adalah beberapa syntax yang sering digunakan:
+
+### Margin
+
+```html
+<div class="m-4">...</div>
+```
+
+Tailwind menggunakan ukuran margin dan padding yang sama dengan Bootstrap. Berikut adalah beberapa ukuran yang tersedia:
+
+| Ukuran | Margin  | Padding |
+| ------ | ------- | ------- |
+| 0      | 0       | 0       |
+| 1      | 0.25rem | 0.25rem |
+| 2      | 0.5rem  | 0.5rem  |
+| 3      | 0.75rem | 0.75rem |
+| 4      | 1rem    | 1rem    |
+| 5      | 1.25rem | 1.25rem |
+| 6      | 1.5rem  | 1.5rem  |
+| 7      | 1.75rem | 1.75rem |
+| 8      | 2rem    | 2rem    |
+| 9      | 2.25rem | 2.25rem |
+| 10     | 2.5rem  | 2.5rem  |
+| 11     | 2.75rem | 2.75rem |
+| 12     | 3rem    | 3rem    |
+| auto   | auto    | auto    |
+
+### Padding
+
+Padding merupakan jarak antara elemen dengan tepi elemen tersebut. Berikut adalah contoh penggunaan padding pada Tailwind CSS:
+
+```html
+<div class="p-4">...</div>
+```
+
+### Background
+
+Background merupakan warna latar belakang dari elemen. Berikut adalah contoh penggunaan background pada Tailwind CSS:
+
+```html
+<div class="bg-red-500">...</div>
+```
+
+### Text
+
+Text merupakan warna teks dari elemen. Berikut adalah contoh penggunaan text pada Tailwind CSS:
+
+```html
+<div class="text-red-500">...</div>
+```
+
+### Border
+
+Border merupakan garis tepi dari elemen. Berikut adalah contoh penggunaan border pada Tailwind CSS:
+
+```html
+<div class="border-2 border-red-500">...</div>
+```
+
+### Font Size
+
+Font size merupakan ukuran font dari elemen. Berikut adalah contoh penggunaan font size pada Tailwind CSS:
+
+```html
+<div class="text-2xl">...</div>
+```
+
+### Font Weight
+
+Font weight merupakan ketebalan font dari elemen. Berikut adalah contoh penggunaan font weight pada Tailwind CSS:
+
+```html
+<div class="font-bold">...</div>
+```
+
+### Width
+
+Width merupakan lebar dari elemen. Berikut adalah contoh penggunaan width pada Tailwind CSS:
+
+```html
+<div class="w-1/2">...</div>
+```
+
+## Referensi
+
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Tailwind CSS Cheat Sheet](https://nerdcave.com/tailwind-cheat-sheet)
+- [Nauval](https://www.youtube.com/watch?v=-5QQ79V8Cts&list=PL0T3Siqy2B-RWZ0fdArM2Z3dshBC1atsc&ab_channel=Nauval)

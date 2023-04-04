@@ -4,5 +4,6 @@
   "html": "Week 01: HTML",
   "css": "Week 02: CSS",
   "laravel": "Week 05: Laravel",
-  "laravel-auth": "Week 06: Laravel-Authentication"
+  "laravel-auth": "Week 06: Laravel-Authentication",
+  "tailwind": "Week 07: Tailwind"
 }
